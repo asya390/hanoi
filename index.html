@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>하노이의 탑</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f8ff;
+        }
+        h1 {
+            color: #ff6347;
+        }
+        #game-container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 50px;
+        }
+        .peg {
+            width: 100px;
+            height: 300px;
+            background-color: #4682b4;
+            position: relative;
+            border-radius: 10px;
+        }
+        .disk {
+            width: 80px;
+            height: 30px;
+            margin: 5px;
+            background-color: #ffcc00;
+            border-radius: 5px;
+            cursor: pointer;
+            position: absolute;
+            bottom: 0;
+            text-align: center;
+            line-height: 30px;
+        }
+        .disk:hover {
+            background-color: #ffa500;
+        }
+    </style>
+</head>
+<body>
+    <h1>하노이의 탑</h1>
+    <p>디스크를 드래그하여 옮기세요!</p>
+    <div id="game-container">
+        <div id="peg1" class="peg"></div>
+        <div id="peg2" class="peg"></div>
+        <div id="peg3" class="peg"></div>
+    </div>
+    <button onclick="resetGame()">게임 초기화</button>
+
+    <script>
+        const pegs = [document.getElementById('peg1'), document.getElementById('peg2'), document.getElementById('peg3')];
+        let selectedDisk = null;
+
+        // 디스크 생성
+        function createDisk(size) {
+            const disk = document.createElement('div');
+            disk.classList.add('disk');
+            disk.style.width = (size * 20) + 'px';
+            disk.dataset.size = size;
+            disk.draggable = true;
+            disk.ondragstart = dragStart;
+            disk.innerHTML = size;  // 디스크에 숫자를 표시
+            return disk;
+        }
+
+        // 초기화
+        function resetGame() {
+            pegs.forEach(peg => peg.innerHTML = '');  // 모든 기둥 비우기
+            for (let i = 3; i > 0; i--) {
+                pegs[0].appendChild(createDisk(i));
+            }
+        }
+
+        // 드래그 시작
+        function dragStart(event) {
+            selectedDisk = event.target;
+        }
+
+        // 디스크 놓기
+        pegs.forEach(peg => {
+            peg.ondragover = event => event.preventDefault();
+            peg.ondrop = dropDisk;
+        });
+
+        // 디스크를 다른 기둥에 놓는 로직
+        function dropDisk(event) {
+            const targetPeg = event.target.closest('.peg');
+            const topDisk = targetPeg.lastElementChild;
+
+            if (!topDisk || selectedDisk.dataset.size < topDisk.dataset.size) {
+                targetPeg.appendChild(selectedDisk);
+            }
+        }
+
+        // 초기 게임 설정
+        resetGame();
+    </script>
+</body>
+</html>
